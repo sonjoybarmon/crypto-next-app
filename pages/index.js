@@ -1,65 +1,69 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { Container, Grid } from "@material-ui/core";
+import Head from "next/head";
+import { useState } from "react";
+import Coins from "../components/Coin/Coins";
+import Layout from "../components/Layout/Layout";
+import SearchBar from "../components/SearchBar/SearchBar";
 
-export default function Home() {
+export default function Home({ data }) {
+  const [search, setSearch] = useState("");
+  const allCoins = data?.filter((coin) =>
+    coin.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleChange = (e) => {
+    setSearch(e.target.value.toLowerCase());
+    e.preventDefault();
+  };
+
   return (
-    <div className={styles.container}>
+    <Layout>
       <Head>
-        <title>Create Next App</title>
+        <title>Crypto -BTC App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+      <main>
+        <div>
+          <Container>
+            <Grid
+              container
+              spacing={1}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "30px 0",
+              }}
+            >
+              <SearchBar
+                type="text"
+                placeholder="Search"
+                onChange={handleChange}
+              />
+            </Grid>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              {/* <Coins data={data} /> */}
+              <Coins data={allCoins} />
+            </div>
+          </Container>
         </div>
       </main>
+    </Layout>
+  );
+}
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+export async function getServerSideProps(context) {
+  const res = await fetch(
+    `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false`
+  );
+  const data = await res.json();
+
+  return {
+    props: { data },
+  };
 }
