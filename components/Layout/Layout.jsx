@@ -1,4 +1,4 @@
-import React from "react";
+import Link from "next/link";
 import Typography from "@material-ui/core/Typography";
 
 const Layout = ({ children }) => {
@@ -11,9 +11,16 @@ const Layout = ({ children }) => {
           padding: "20px 0",
         }}
       >
-        <Typography variant="h3" color="initial">
-          CRYPTO-BTC
-        </Typography>
+        <Link
+          href="/"
+          style={{
+            cursor: "pointer",
+          }}
+        >
+          <Typography variant="h3" color="initial">
+            CRYPTO-BTC
+          </Typography>
+        </Link>
       </nav>
       <div>{children}</div>
       <footer>
